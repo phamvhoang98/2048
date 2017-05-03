@@ -26,7 +26,6 @@ SDL_Renderer* renderer;
 
 Mix_Music *startSound ;
 Mix_Chunk *buttonSound ;
-Mix_Chunk *gameOverSound ;
 
 void loadSound()
 {
@@ -36,7 +35,6 @@ void loadSound()
 	}
 	startSound = Mix_LoadMUS("Sound/startSound.wav");
 	buttonSound = Mix_LoadWAV("Sound/button.wav");
-	gameOverSound = Mix_LoadWAV("Sound/gameOver.wav");
 }
 void playStartSound()
 {
@@ -49,21 +47,17 @@ void playButtonSound()
 {
 	Mix_PlayChannel(-1,buttonSound,0);
 }
-void playGameOverSound()
-{
-	Mix_PlayChannel(-1,gameOverSound,0);
-}
+
 void quitSound()
 {
 	Mix_FreeMusic(startSound);
     Mix_FreeChunk(buttonSound);
-    Mix_FreeChunk(gameOverSound);
     Mix_CloseAudio();
 }
-//*** het phan tao am thanh cho game
+//***
 
 //*** dua anh vao trong game
-SDL_Rect Screen = {0, 0, 485, 700};
+SDL_Rect Screen = {0, 0, 484, 700};
 SDL_Rect Replay = {282,159,56,58} ;
 SDL_Rect Music = {380,159,58,58};
 SDL_Rect gameOver = {0,238,494,462};
@@ -90,7 +84,7 @@ SDL_Texture* Number_65536 ;
 
 SDL_Texture* Lose ;
 SDL_Texture* MusicSound ;
-SDL_Texture* result_text;
+//SDL_Texture* result_text;
 
 
 void quitImage()
@@ -113,7 +107,7 @@ void quitImage()
 	SDL_DestroyTexture(Number_32768);
 	SDL_DestroyTexture(Number_65536);
 	SDL_DestroyTexture(Lose);
-	SDL_DestroyTexture(result_text);
+	//SDL_DestroyTexture(result_text);
 	SDL_DestroyTexture(MusicSound);
 	IMG_Quit();
 
@@ -137,7 +131,7 @@ void Init()
 	TTF_Init();
 	windows = SDL_CreateWindow("Game 2048", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 485, 700, SDL_WINDOW_SHOWN);
 	renderer = SDL_CreateRenderer(windows, -1, SDL_RENDERER_ACCELERATED);
-	comic = TTF_OpenFont("Font/comic.ttf", 20);
+	comic = TTF_OpenFont("Font/comic.ttf", 200);
 	if (comic == NULL)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERRR", SDL_GetError(), windows);
@@ -449,27 +443,24 @@ void waitEvent()
 				}
 				break;
 			}
-		//case SDL_MOUSEMOTION:
-			//{
-				//int mouseX = event.motion.x;
-			//	int mouseY = event.motion.y;
-				//std::cout << mouseX << "\t" << mouseY << std::endl;
-			//	break ;
-			//}
+
 		case SDL_MOUSEBUTTONDOWN:
 			{
 				int mouseClickX = event.motion.x;
                 int mouseClickY = event.motion.y;
                 if((mouseClickX >= Replay.x) && (mouseClickX <= Replay.x + Replay.w) && (mouseClickY >= Replay.y) && (mouseClickY <= Replay.y + Replay.h))
 				{
-					playButtonSound();
+					if (MUTE == false)
+					{
+						playButtonSound();
+					}
 					replayGame = true ;
 				}
 				else if((mouseClickX >= Music.x) && (mouseClickX <= Music.x + Music.w) && (mouseClickY >= Music.y) && (mouseClickY <= Music.y + Music.h))
 				{
-					playButtonSound();
 					if (MUTE == false )
 					{
+						playButtonSound();
 						MUTE = true ;
 					}
 					else  MUTE = false ;
@@ -490,18 +481,20 @@ void loadScore()
     std::string strA = score1.str();
     score2 << bestScore();
     std::string strB = score2.str();
-
+	SDL_Texture *result_text[2];
     SDL_Color WHITE = {255,255,255};
     SDL_Surface* ScoreSurA = TTF_RenderText_Solid(comic, strA.c_str(), WHITE);
     SDL_Surface* ScoreSurB = TTF_RenderText_Solid(comic, strB.c_str(), WHITE);
-    SDL_Rect Score = {284,51,52,65};
-	SDL_Rect Best  = { 383,51,52,65};
-    result_text = SDL_CreateTextureFromSurface(renderer,ScoreSurA);
-    SDL_RenderCopy(renderer, result_text, NULL, &Score);
-    result_text = SDL_CreateTextureFromSurface(renderer, ScoreSurB);
-    SDL_RenderCopy(renderer, result_text, NULL, &Best);
-    SDL_FreeSurface(ScoreSurA);
+	SDL_Rect Score = {284,51,52,65};
+	SDL_Rect Best  = {383,51,52,65};
+    result_text[0] = SDL_CreateTextureFromSurface(renderer,ScoreSurA);
+    SDL_RenderCopy(renderer, result_text[0], NULL, &Score);
+	SDL_FreeSurface(ScoreSurA);
+    result_text[1] = SDL_CreateTextureFromSurface(renderer, ScoreSurB);
+    SDL_RenderCopy(renderer, result_text[1], NULL, &Best);
     SDL_FreeSurface(ScoreSurB);
+    SDL_DestroyTexture(result_text[1]);
+    SDL_DestroyTexture(result_text[0]);
 }
 
 //*** dua anh vao cac o thich hop
@@ -702,7 +695,6 @@ int main(int argc, char* argv[])
 		loadScore();
 		if (checkGameOver() == true)
 		{
-			playGameOverSound();
 			SDL_RenderCopy(renderer,Lose,NULL,&gameOver);
 		}
 
