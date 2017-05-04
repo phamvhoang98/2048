@@ -84,7 +84,6 @@ SDL_Texture* Number_65536 ;
 
 SDL_Texture* Lose ;
 SDL_Texture* MusicSound ;
-//SDL_Texture* result_text;
 
 
 void quitImage()
@@ -107,7 +106,6 @@ void quitImage()
 	SDL_DestroyTexture(Number_32768);
 	SDL_DestroyTexture(Number_65536);
 	SDL_DestroyTexture(Lose);
-	//SDL_DestroyTexture(result_text);
 	SDL_DestroyTexture(MusicSound);
 	IMG_Quit();
 
@@ -207,7 +205,7 @@ void init_gameBoard()
 // *** cac ham thay doi gia tri cua cac o trong game
 void turnLeft()
 {
-	// Dua cac gia tri len tren
+	// Dua cac gia tri sang trai
 
 	for (int j = 0; j < 4; j++)
         {
@@ -250,7 +248,7 @@ void turnLeft()
 
 void turnRight()
 {
-	// Dua cac gia tri xuong duoi
+	// Dua cac gia tri sang phai
 
 	for (int j = 0; j < 4; j++)
         {
@@ -293,7 +291,7 @@ void turnRight()
 
 void goUp()
 {
-	// Dua cac gia tri sang trai
+	// Dua cac gia tri len tren
 
 	for (int i = 0; i < 4; i++)
         {
@@ -336,7 +334,7 @@ void goUp()
 
 void goDown()
 {
-	// Dua cac gia tri sang phai
+	// Dua cac gia tri xuong duoi
 
 	for (int i = 0; i < 4; i++)
         {
